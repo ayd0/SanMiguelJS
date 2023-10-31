@@ -471,5 +471,6 @@ window.addEventListener('load', function() {
     }
 
     animate(0);
+    
 
 })
