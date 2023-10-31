@@ -1,0 +1,22 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#canvas {
+    border: 3px solid black;
+    position: absolute;
+    /* could put image as background so you you dont have to redraw it every frame */
+    /* background:url('bg.png'); */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* max-width: 100%;
+    max-height: 100%; */
+    /* background: url('assets/dojo_interior_x1.png'); */
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crips-edges;
+    image-rendering: pixelated;
+    image-rendering: crips-edges;
+}
