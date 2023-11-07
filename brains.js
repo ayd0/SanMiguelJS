@@ -16,6 +16,24 @@ window.addEventListener('load', function() {
     const ramGirlSprite = new Image()
     ramGirlSprite.src = 'assets/ramGirl_x1.png'
 
+    const katanaSprite = new Image()
+    katanaSprite.src = 'assets/katana_x2.png'
+
+    class PlayerKatana {
+        constructor(game) {
+            this.game = game;
+            this.w = 64;
+            this.h = 64;
+            this.x = this.game.player.x;
+            this.y = this.game.player.y;
+            this.frameX = 0;
+            this.frameY = 0;
+        }
+        draw (ctx) {
+            ctx.drawImage(katanaSprite, this.w * this.frameX, this.h * this.frameY, this.w, this.h, this.x, this.y, this.w, this.h)
+        }
+    }
+
     class HardBoundaries {
         constructor (game) {
             this.game = game;
@@ -342,13 +360,15 @@ window.addEventListener('load', function() {
             this.cameraBoxRightEdge = this.cameraBoxX + this.cameraBoxW;
             this.cameraBoxBottomEdge = this.cameraBoxY + this.cameraBoxH;
 
-            this.boundaryBox = true;
+            this.boundaryBox = false;
             this.boundaryBoxW = 20;
             this.boundaryBoxH = 46;
             this.boundaryBoxX = (this.x + this.w * 0.5) - (this.boundaryBoxW * 0.5);
             this.boundaryBoxY = (this.y + this.h * 0.5) - (this.boundaryBoxH * 0.35);
             this.boundaryBoxRightEdge = this.boundaryBoxX + this.boundaryBoxW;
             this.boundaryBoxBottomEdge = this.boundaryBoxY + this.boundaryBoxH;
+
+            this.aim;
 
         }
         draw(ctx) {
@@ -494,20 +514,53 @@ window.addEventListener('load', function() {
             }
             updateBoundaryBox();
 
+            const aimage  = () => {
+                this.aim = this.game.calcAim(this.game.mouseCoordinates, this)
+                // console.log(this.aim)
+                // need weapon to follow path  https://www.youtube.com/watch?v=7kA9lHdukGA&t=305s 29:18
+            }
+            aimage()
+
         }
     }
     
     class Game {
-        constructor(width, height) {
+        constructor(width, height, cnvs) {
             this.width = width;
             this.height = height;
             this.dojoLevel = new DojoLevel(this);
             this.hardBoundaries = new HardBoundaries(this);
             this.scrollBoundaries = new ScrollBoundaries(this);
             this.player = new Player(this);
+            this.playerKatana = new PlayerKatana(this);
             this.ramGirl = new RamGirl(this);
             this.input = new InputHandler(this);
             this.keys = [];
+
+            this.mouse = {
+                x: 0,
+                y: 0,
+                xOff: 0,
+                yOff: 0
+            }
+            
+            window.addEventListener('mousemove', (e) => {
+                this.mouse.x = e.offsetX;
+                this.mouse.y = e.offsetY;
+            })
+            // window.addEventListener('mousemove', (e) => {
+            //     this.mouse.x = e.offsetX - this.mouse.xOff;
+            //     this.mouse.y = e.offsetY - this.mouse.yOff;
+            // })
+            // window.addEventListener('keydown', (e => {
+            //     this.mouse.x = e.offsetX - this.mouse.xOff;
+            //     this.mouse.y = e.offsetY - this.mouse.yOff;
+            // }))
+
+            this.mouseCoordinates = {
+                x: 0,
+                y: 0
+            }
 
         }
         update() {
@@ -515,6 +568,20 @@ window.addEventListener('load', function() {
             this.scrollBoundaries.update()
             this.ramGirl.update()
             this.player.update()
+
+            if (this.dojoLevel.moveLeft)  this.mouse.xOff -= this.player.speed;
+            else if (this.dojoLevel.moveRight) this.mouse.xOff += this.player.speed;
+            else this.mouse.xOff = this.mouse.xOff;
+
+            if (this.dojoLevel.moveUp) this.mouse.yOff -= this.player.speed;
+            else if (this.dojoLevel.moveDown) this.mouse.yOff += this.player.speed;
+            else this.mouse.yOff = this.mouse.yOff;
+
+            // console.log(this.mouse.xOff, this.mouse.yOff)
+
+            this.mouseCoordinates.x = this.mouse.x - this.mouse.xOff;
+            this.mouseCoordinates.y = this.mouse.y - this.mouse.yOff;
+
         }
         draw(ctx) {
             this.dojoLevel.draw(ctx);
@@ -522,10 +589,28 @@ window.addEventListener('load', function() {
             // this.scrollBoundaries.draw(ctx);
             this.ramGirl.draw(ctx);
             this.player.draw(ctx);
+            this.playerKatana.draw(ctx);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(this.player.x + this.player.w * 0.5, this.player.y + this.player.h * 0.5);
+            ctx.lineTo(this.mouseCoordinates.x, this.mouseCoordinates.y);
+            // ctx.translate(this.mouse.translateX + this.mouse.tXSummand, this.mouse.translateY + this.mouse.tYSummand)
+            ctx.stroke();
+            ctx.restore()
+        }
+
+        calcAim (a, b) {
+            const dx = a.x = b.x;
+            const dy = a.y - b.y;
+            const distance = Math.hypot(dx, dy);
+            const aimX = dx / distance;
+            const aimY = dy / distance;
+            return [ aimX, aimY, dx, dy ];
         }
     }
 
-    const game = new Game(cnvs.width, cnvs.height)
+    const game = new Game(cnvs.width, cnvs.height, cnvs)
 
 
     let frames_per_second = 60;
