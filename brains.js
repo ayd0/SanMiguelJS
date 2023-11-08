@@ -380,6 +380,7 @@ window.addEventListener('load', function() {
 
         }
         draw(ctx) {
+            // TODO: create queue for draw requests
             this.dojoLevel.draw(ctx);
             this.hardBoundaries.draw(ctx);
             // this.scrollBoundaries.draw(ctx);

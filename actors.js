@@ -23,24 +23,37 @@ class Actor {
         this.moveUp = false;
         this.moveDown = false;
         this.speed = 1;
-        this.walk = false;
-    }
-}
+
+        this.boundaryBox = true;
+        this.boundaryBoxW = 20;
+        this.boundaryBoxH = 46;
+        this.boundaryBoxX = this.x + this.w * 0.5 - this.boundaryBoxW * 0.5;
+        this.boundaryBoxY = this.y + this.h * 0.5 - this.boundaryBoxH * 0.35;
+        this.boundaryBoxRightEdge = this.boundaryBoxX + this.boundaryBoxW;
+        this.boundaryBoxBottomEdge = this.boundaryBoxY + this.boundaryBoxH;
+    }}
 
 class RamGirl extends Actor {
     constructor(overrides = { x: 0, y: 0 }) {
         super();
+        // pos
         this.x = hOverrides(300, overrides.x);
         this.y = hOverrides(300, overrides.y);
         this.moveRight = true;
 
+        // actions
+        this.walk = false;
         this.attack = true;
+
+        // boundaries
+        this.boundaryBoxW = 40;
+
         // future state for idling movement, will update for random chance
         this.idling = false;
         this.idlingInterval = setInterval(() => {
             this.moveLeft = !this.moveLeft;
             this.moveRight = !this.moveRight;
-        }, Math.ceil(Math.random(0, 1) * 800) + 300);
+        }, Math.ceil(Math.random(0, 1) * 800) + 500);
     }
     draw(ctx) {
         ctx.drawImage(
@@ -54,6 +67,21 @@ class RamGirl extends Actor {
             this.w,
             this.h
         );
+
+        const drawBoundaryBox = () => {
+            if (this.boundaryBox) {
+                ctx.save();
+                ctx.fillStyle = "rgba(150, 200, 0, 0.45)";
+                ctx.fillRect(
+                    this.boundaryBoxX,
+                    this.boundaryBoxY,
+                    this.boundaryBoxW,
+                    this.boundaryBoxH
+                );
+                ctx.restore();
+            }
+        };
+        drawBoundaryBox();
     }
     update() {
         const ramDirection = () => {
@@ -116,48 +144,50 @@ class RamGirl extends Actor {
             }
         };
         ramAttack();
+
+        const updateBoundaryBox = () => {
+            this.boundaryBoxX = this.x + this.w * 0.5 - this.boundaryBoxW * 0.5;
+            this.boundaryBoxY =
+                this.y + this.h * 0.5 - this.boundaryBoxH * 0.35;
+            this.boundaryBoxRightEdge = this.boundaryBoxX + this.boundaryBoxW;
+            this.boundaryBoxBottomEdge = this.boundaryBoxY + this.boundaryBoxH;
+        };
+        updateBoundaryBox();
     }
 }
-class Player {
-    constructor(game) {
-        this.game = game;
-        this.w = 64;
-        this.h = 64;
-        this.x = 200;
-        this.y = 150;
-        this.frameX = 0;
-        this.frameY = 1;
+class Player extends Actor {
+        constructor(game) {
+            super(game);
+            this.x = 200;
+            this.y = 150;
+            this.frameY = 1;
 
-        this.speed = 5;
-        this.moveUp = false;
-        this.moveDown = false;
-        this.moveLeft = false;
-        this.moveRight = false;
+            this.speed = 5;
 
-        this.hitBox = false;
-        this.hitBoxX = this.x + 26;
-        this.hitBoxY = this.y + 22;
-        this.hitBoxW = 12;
-        this.hitBoxH = 30;
+            this.hitBox = false;
+            this.hitBoxX = this.x + 26;
+            this.hitBoxY = this.y + 22;
+            this.hitBoxW = 12;
+            this.hitBoxH = 30;
 
-        this.cameraBox = false;
-        this.cameraBoxW = 400;
-        this.cameraBoxH = 300;
-        this.cameraBoxX = this.x + this.w * 0.5 - this.cameraBoxW * 0.5;
-        this.cameraBoxY = this.y + this.h * 0.5 - this.cameraBoxH * 0.5;
-        this.cameraBoxRightEdge = this.cameraBoxX + this.cameraBoxW;
-        this.cameraBoxBottomEdge = this.cameraBoxY + this.cameraBoxH;
+            this.cameraBox = false;
+            this.cameraBoxW = 400;
+            this.cameraBoxH = 300;
+            this.cameraBoxX = this.x + this.w * 0.5 - this.cameraBoxW * 0.5;
+            this.cameraBoxY = this.y + this.h * 0.5 - this.cameraBoxH * 0.5;
+            this.cameraBoxRightEdge = this.cameraBoxX + this.cameraBoxW;
+            this.cameraBoxBottomEdge = this.cameraBoxY + this.cameraBoxH;
 
-        this.boundaryBox = false;
-        this.boundaryBoxW = 20;
-        this.boundaryBoxH = 46;
-        this.boundaryBoxX = this.x + this.w * 0.5 - this.boundaryBoxW * 0.5;
-        this.boundaryBoxY = this.y + this.h * 0.5 - this.boundaryBoxH * 0.35;
-        this.boundaryBoxRightEdge = this.boundaryBoxX + this.boundaryBoxW;
-        this.boundaryBoxBottomEdge = this.boundaryBoxY + this.boundaryBoxH;
+            this.boundaryBox = true;
+            this.boundaryBoxW = 20;
+            this.boundaryBoxH = 46;
+            this.boundaryBoxX = this.x + this.w * 0.5 - this.boundaryBoxW * 0.5;
+            this.boundaryBoxY = this.y + this.h * 0.5 - this.boundaryBoxH * 0.35;
+            this.boundaryBoxRightEdge = this.boundaryBoxX + this.boundaryBoxW;
+            this.boundaryBoxBottomEdge = this.boundaryBoxY + this.boundaryBoxH;
 
-        this.aim;
-    }
+            this.aim;
+        }
     draw(ctx) {
         const drawPlayer = () => {
             ctx.drawImage(
