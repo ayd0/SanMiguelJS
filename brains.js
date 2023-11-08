@@ -1,6 +1,10 @@
 /**@type {HTMLCanvasElement}*/
 // yo yo
 
+import classUtils from "./classUtils.js";
+const hOverrides = classUtils.hOverrides;
+
+
 window.addEventListener('load', function() {
     const cnvs = document.getElementById('canvas');
     const ctx = cnvs.getContext('2d')
@@ -303,21 +307,27 @@ window.addEventListener('load', function() {
     }
 
     class RamGirl {
-        constructor(game) {
+        constructor(game, overrides={x: 0, y: 0}) {
             this.game = game;
             this.w = 64;
             this.h = 64;
-            this.x = 300;
-            this.y = 300;
+            this.x = hOverrides(300, overrides.x);
+            this.y = hOverrides(300, overrides.y);
             this.frameX = 0;
             this.frameY = 0;
-            this.moveRight = false;
+            this.moveRight = true;
             this.moveLeft = false;
             this.moveUp = false;
             this.moveDown = false;
             this.speed = 1;
             this.walk = false;
             this.attack = true;
+            // future state for idling movement, will update for random chance
+            this.idling = false;
+            this.idlingInterval = setInterval(() => {
+               this.moveLeft = !this.moveLeft; 
+               this.moveRight = !this.moveRight;
+            }, 1200)
         }
         draw (ctx) {
             ctx.drawImage(ramGirlSprite, this.w*this.frameX, this.h*this.frameY, this.w, this.h, this.x, this.y, this.w, this.h)
@@ -379,7 +389,6 @@ window.addEventListener('load', function() {
                 }
             }
             ramAttack()
-
         }
     }
 
@@ -592,7 +601,10 @@ window.addEventListener('load', function() {
             this.scrollBoundaries = new ScrollBoundaries(this);
             this.player = new Player(this);
             this.playerKatana = new PlayerKatana(this);
-            this.ramGirl = new RamGirl(this);
+            this.ramGirls = [
+                new RamGirl(this, {x: 25, y: 100}), 
+                new RamGirl(this, {x: 50, y: 50})
+            ];
             this.input = new InputHandler(this);
             this.keys = [];
 
@@ -625,7 +637,7 @@ window.addEventListener('load', function() {
         update() {
             this.dojoLevel.update()
             this.scrollBoundaries.update()
-            this.ramGirl.update()
+            this.ramGirls.forEach(ramGirl => ramGirl.update());
             this.playerKatana.update()
             this.player.update()
 
@@ -647,7 +659,7 @@ window.addEventListener('load', function() {
             this.dojoLevel.draw(ctx);
             this.hardBoundaries.draw(ctx);
             // this.scrollBoundaries.draw(ctx);
-            this.ramGirl.draw(ctx);
+            this.ramGirls.forEach(ramGirl => ramGirl.draw(ctx));
             this.playerKatana.draw(ctx);
             this.player.draw(ctx);
 
