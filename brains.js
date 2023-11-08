@@ -329,9 +329,6 @@ window.addEventListener('load', function() {
                 new RamGirl(this, {x: 80, y: 100}),
                 new RamGirl(this, {x: 90, y: 250})
             ];
-            for (let i = 0; i < 100; ++i) {
-                this.ramGirls.push(new RamGirl(this, {x: Math.ceil(Math.random(0, 1) * 100 + 200), y: Math.ceil(Math.random(0, 1) * 100 + 200)}))
-            }
             this.input = new InputHandler(this);
             this.keys = [];
 
