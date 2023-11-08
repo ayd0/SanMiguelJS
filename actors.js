@@ -6,6 +6,9 @@ import { getGameFrame } from "./gameFrame.js";
 const ramGirlSprite = new Image();
 ramGirlSprite.src = "assets/ramGirl_x1.png";
 
+const ninjaSprite = new Image()
+ninjaSprite.src = 'assets/the_ninja_x2.png'
+
 class Actor {
     constructor(game) {
         this.game = game;
@@ -252,8 +255,8 @@ class Player {
             if (
                 this.game.keys.includes("a") &&
                 this.boundaryBoxX >
-                    this.game.hardBoundaries.column1X +
-                        this.game.hardBoundaries.column1W
+                this.game.hardBoundaries.column1X +
+                this.game.hardBoundaries.column1W
             )
                 this.moveLeft = true;
             else this.moveLeft = false;
@@ -261,8 +264,8 @@ class Player {
             if (
                 this.game.keys.includes("w") &&
                 this.boundaryBoxY >
-                    this.game.hardBoundaries.row1Y +
-                        this.game.hardBoundaries.row1H
+                this.game.hardBoundaries.row1Y +
+                this.game.hardBoundaries.row1H
             )
                 this.moveUp = true;
             else this.moveUp = false;
@@ -277,10 +280,10 @@ class Player {
         determineMovementDirection();
 
         // const katanaChop = () => {
-        //     if (this.game.keys.includes(' ') &&
+            //     if (this.game.keys.includes(' ') &&
 
-        //     )
-        // }
+                //     )
+                // }
 
         const playerMovement = () => {
             if (this.moveRight) this.x += this.speed;
@@ -352,4 +355,4 @@ class Player {
     }
 }
 
-export default { RamGirl };
+export default { RamGirl, Player };
