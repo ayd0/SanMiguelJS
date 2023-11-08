@@ -32,6 +32,38 @@ window.addEventListener('load', function() {
         draw (ctx) {
             ctx.drawImage(katanaSprite, this.w * this.frameX, this.h * this.frameY, this.w, this.h, this.x, this.y, this.w, this.h)
         }
+        update() {
+            this.x = this.game.player.x;
+            this.y = this.game.player.y;
+            const adjustCoordinates = () => {
+                if (this.game.player.frameY === 0) {
+                    this.y = this.game.player.y - 15;
+                    this.x = this.game.player.x + 10;
+                } else if (this.game.player.frameY === 1) {
+                    this.y = this.game.player.y - 15;
+                    this.x = this.game.player.x + 10;
+                } else if (this.game.player.frameY === 2) {
+                    this.y = this.game.player.y - 15;
+                    this.x = this.game.player.x + 10;
+                } else if (this.game.player.frameY === 3) {
+                    this.y = this.game.player.y - 15;
+                    this.x = this.game.player.x - 8;
+                } else null
+            }
+            adjustCoordinates()
+            const adjustDirection = () => {
+                if (this.game.player.frameY === 0) {
+                    this.frameY = 1;
+                } else if (this.game.player.frameY === 1) {
+                    this.frameY = 1;
+                } else if (this.game.player.frameY === 2) {
+                    this.frameY = 0;
+                } else if (this.game.player.frameY === 3) {
+                    this.frameY = 0;
+                } else null
+            }
+            adjustDirection();
+        }
     }
 
     class HardBoundaries {
@@ -234,7 +266,8 @@ window.addEventListener('load', function() {
                     (e.key === 'w') ||
                     (e.key === 's') ||
                     (e.key === 'a') ||
-                    (e.key === 'd')
+                    (e.key === 'd') ||
+                    (e.key === ' ')
                 )
                 &&(this.game.keys.indexOf(e.key) === -1)) {
                     this.game.keys.push(e.key);
@@ -254,11 +287,11 @@ window.addEventListener('load', function() {
             this.game = game;
             this.w = 64;
             this.h = 64;
-            this.x = 300;
-            this.y = 300;
+            // this.x = 300;
+            // this.y = 300;
             this.frameX = 0;
             this.frameY = 0;
-            this.moveRight = true;
+            this.moveRight = false;
             this.moveLeft = false;
             this.moveUp = false;
             this.moveDown = false;
@@ -328,6 +361,12 @@ window.addEventListener('load', function() {
             ramAttack()
 
         }
+    }
+
+    let numberOfRamGirls = 20;
+    let ramGirls = [];
+    for(let i=0; i<numberOfRamGirls; i++) {
+        ramGirls.push(new RamGirl())
     }
 
     class Player {
@@ -457,6 +496,12 @@ window.addEventListener('load', function() {
             }
             determineMovementDirection()
 
+            // const katanaChop = () => {
+            //     if (this.game.keys.includes(' ') && 
+
+            //     )
+            // }
+
             const playerMovement = () => {
                 if (this.moveRight) this.x += this.speed;
                 if (this.moveLeft) this.x -= this.speed;
@@ -567,6 +612,7 @@ window.addEventListener('load', function() {
             this.dojoLevel.update()
             this.scrollBoundaries.update()
             this.ramGirl.update()
+            this.playerKatana.update()
             this.player.update()
 
             if (this.dojoLevel.moveLeft)  this.mouse.xOff -= this.player.speed;
@@ -588,16 +634,15 @@ window.addEventListener('load', function() {
             this.hardBoundaries.draw(ctx);
             // this.scrollBoundaries.draw(ctx);
             this.ramGirl.draw(ctx);
-            this.player.draw(ctx);
             this.playerKatana.draw(ctx);
+            this.player.draw(ctx);
 
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(this.player.x + this.player.w * 0.5, this.player.y + this.player.h * 0.5);
-            ctx.lineTo(this.mouseCoordinates.x, this.mouseCoordinates.y);
-            // ctx.translate(this.mouse.translateX + this.mouse.tXSummand, this.mouse.translateY + this.mouse.tYSummand)
-            ctx.stroke();
-            ctx.restore()
+            // ctx.save();
+            // ctx.beginPath();
+            // ctx.moveTo(this.player.x + this.player.w * 0.5, this.player.y + this.player.h * 0.5);
+            // ctx.lineTo(this.mouseCoordinates.x, this.mouseCoordinates.y);
+            // ctx.stroke();
+            // ctx.restore();
         }
 
         calcAim (a, b) {
@@ -635,7 +680,6 @@ window.addEventListener('load', function() {
             // ctx.drawImage(dojoSprite, 0, 0)
             game.update()
             game.draw(ctx)
-
 
         }
 
