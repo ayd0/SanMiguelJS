@@ -1,4 +1,5 @@
 /**@type {HTMLCanvasElement}*/
+// yo
 
 window.addEventListener('load', function() {
     const cnvs = document.getElementById('canvas');
