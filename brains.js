@@ -36,8 +36,6 @@ window.addEventListener('load', function() {
             this.angle = 0;
         }
         draw (ctx) {
-
-
             // rotation origin point
             ctx.save();
             ctx.translate(this.x + 30, this.y + 50);
@@ -52,14 +50,14 @@ window.addEventListener('load', function() {
             this.x = this.game.player.x;
             this.y = this.game.player.y;
 
-            this.angle += .1;
+            // this.angle += .1;
 
 
 
             const adjustCoordinates = () => {
                 if (this.game.player.frameY === 0) {
-                    this.y = this.game.player.y - 15;
-                    this.x = this.game.player.x + 10;
+                    this.y = this.game.player.y - 5;
+                    this.x = this.game.player.x;
                 } else if (this.game.player.frameY === 1) {
                     this.y = this.game.player.y - 15;
                     this.x = this.game.player.x + 10;
@@ -68,13 +66,13 @@ window.addEventListener('load', function() {
                     this.x = this.game.player.x + 10;
                 } else if (this.game.player.frameY === 3) {
                     this.y = this.game.player.y - 15;
-                    this.x = this.game.player.x - 8;
+                    this.x = this.game.player.x - 5;
                 } else null
             }
             adjustCoordinates()
             const adjustDirection = () => {
                 if (this.game.player.frameY === 0) {
-                    this.frameY = 1;
+                    this.frameY = 0;
                 } else if (this.game.player.frameY === 1) {
                     this.frameY = 1;
                 } else if (this.game.player.frameY === 2) {
@@ -84,6 +82,20 @@ window.addEventListener('load', function() {
                 } else null
             }
             adjustDirection();
+
+            const adjustAngle = () => {
+                if (this.game.player.frameY === 0) {
+                    this.angle = (Math.PI/12)
+                } else if (this.game.player.frameY === 1) {
+                    this.angle = -45*Math.PI/180;
+                } else if (this.game.player.frameY === 2) {
+                    this.angle = 11*Math.PI/12;
+                } else if (this.game.player.frameY === 3) {
+                    // this.angle = (3*Math.PI/4)
+                    this.angle = 45*Math.PI/180;
+                } else null            
+            }
+            adjustAngle();
         }
     }
 
