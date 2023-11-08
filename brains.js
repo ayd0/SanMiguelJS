@@ -1,5 +1,5 @@
 /**@type {HTMLCanvasElement}*/
-// yo
+// yo yo
 
 window.addEventListener('load', function() {
     const cnvs = document.getElementById('canvas');
