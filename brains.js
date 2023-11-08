@@ -62,10 +62,11 @@ window.addEventListener('load', function() {
             // this.angle += .1;
 
 
+
             const adjustCoordinates = () => {
                 if (this.game.player.frameY === 0) {
                     this.y = this.game.player.y - 5;
-                    this.x = this.game.player.x;
+                    this.x = this.game.player.x - 5;
                 } else if (this.game.player.frameY === 1) {
                     this.y = this.game.player.y - 15;
                     this.x = this.game.player.x + 10;
@@ -93,11 +94,12 @@ window.addEventListener('load', function() {
 
             const adjustAngle = () => {
                 if (this.game.player.frameY === 0) {
-                    this.angle = (Math.PI/12)
+                    this.angle = -20*Math.PI/180;
                 } else if (this.game.player.frameY === 1) {
                     this.angle = -45*Math.PI/180;
                 } else if (this.game.player.frameY === 2) {
-                    this.angle = 11*Math.PI/12;
+                    // this.angle = 11*Math.PI/12;
+                    this.angle = 165*Math.PI/180
                 } else if (this.game.player.frameY === 3) {
                     // this.angle = (3*Math.PI/4)
                     this.angle = 45*Math.PI/180;
@@ -324,15 +326,15 @@ window.addEventListener('load', function() {
 
     /*
     class RamGirl {
-        constructor(game, overrides={x: 0, y: 0}) {
+        constructor(game) {
             this.game = game;
             this.w = 64;
             this.h = 64;
-            this.x = hOverrides(300, overrides.x);
-            this.y = hOverrides(300, overrides.y);
+            this.x = 300;
+            this.y = 300;
             this.frameX = 0;
             this.frameY = 0;
-            this.moveRight = true;
+            this.moveRight = false;
             this.moveLeft = false;
             this.moveUp = false;
             this.moveDown = false;
@@ -406,6 +408,7 @@ window.addEventListener('load', function() {
                 }
             }
             ramAttack()
+
         }
     }
     */
@@ -619,13 +622,7 @@ window.addEventListener('load', function() {
             this.scrollBoundaries = new ScrollBoundaries(this);
             this.player = new Player(this);
             this.playerKatana = new PlayerKatana(this);
-            this.ramGirls = [
-                new RamGirl(this, {x: 25, y: 100}), 
-                new RamGirl(this, {x: 520, y: 90}),
-                new RamGirl(this, {x: 30, y: 350}),
-                new RamGirl(this, {x: 80, y: 100}),
-                new RamGirl(this, {x: 90, y: 250})
-            ];
+            this.ramGirl = new RamGirl(this);
             this.input = new InputHandler(this);
             this.keys = [];
 
@@ -658,7 +655,7 @@ window.addEventListener('load', function() {
         update() {
             this.dojoLevel.update()
             this.scrollBoundaries.update()
-            this.ramGirls.forEach(ramGirl => ramGirl.update());
+            this.ramGirl.update()
             this.playerKatana.update()
             this.player.update()
 
@@ -680,7 +677,7 @@ window.addEventListener('load', function() {
             this.dojoLevel.draw(ctx);
             this.hardBoundaries.draw(ctx);
             // this.scrollBoundaries.draw(ctx);
-            this.ramGirls.forEach(ramGirl => ramGirl.draw(ctx));
+            this.ramGirl.draw(ctx);
             this.playerKatana.draw(ctx);
             this.player.draw(ctx);
 
@@ -719,8 +716,7 @@ window.addEventListener('load', function() {
         if (deltaTime > interval) {
 
             previousTime = currentTime - (deltaTime % interval);
-            incrementGameFrame();
-
+            incrementGameFrame()
             ctx.clearRect(0, 0, cnvs.width, cnvs.height);
             // ctx.drawImage(dojoSprite, 0, 0)
             game.update()
@@ -733,5 +729,6 @@ window.addEventListener('load', function() {
     }
 
     animate(0);
+
 
 })
