@@ -33,13 +33,33 @@ window.addEventListener('load', function() {
             this.y = this.game.player.y;
             this.frameX = 0;
             this.frameY = 0;
+
+            this.rotationOriginX = this.x + this.w * 0.5;
+            this.rotationOriginY = this.y + this.h * 0.5;
+            this.rotationPointRadius = 2;
+            this.angle = 0;
         }
         draw (ctx) {
-            ctx.drawImage(katanaSprite, this.w * this.frameX, this.h * this.frameY, this.w, this.h, this.x, this.y, this.w, this.h)
+
+
+            // rotation origin point
+            ctx.save();
+            ctx.translate(this.x + 30, this.y + 50);
+            ctx.rotate(this.angle);
+            ctx.translate(-(this.x + 32), -(this.y + 50));
+            // katana
+            ctx.drawImage(katanaSprite, this.w * this.frameX, this.h * this.frameY, this.w, this.h, this.x, this.y, this.w, this.h);
+            ctx.restore();
         }
         update() {
+
             this.x = this.game.player.x;
             this.y = this.game.player.y;
+
+            this.angle += .1;
+
+
+
             const adjustCoordinates = () => {
                 if (this.game.player.frameY === 0) {
                     this.y = this.game.player.y - 15;
@@ -192,7 +212,6 @@ window.addEventListener('load', function() {
             this.y = 0;
             this.w = 960;
             this.h = 960;
-
             this.translateX = 0;
             this.translateY = 0;
             this.tXSummand = 0;
