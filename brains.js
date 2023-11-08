@@ -1,9 +1,13 @@
 /**@type {HTMLCanvasElement}*/
 // yo yo
 
+import { gameFrame, incrementGameFrame, getGameFrame } from "./gameFrame.js";
+
 import classUtils from "./classUtils.js";
 const hOverrides = classUtils.hOverrides;
 
+import actorClasses from "./actors.js";
+const RamGirl = actorClasses.RamGirl;
 
 window.addEventListener('load', function() {
     const cnvs = document.getElementById('canvas');
@@ -40,8 +44,6 @@ window.addEventListener('load', function() {
             this.angle = 0;
         }
         draw (ctx) {
-
-
             // rotation origin point
             ctx.save();
             ctx.translate(this.x + 30, this.y + 50);
@@ -56,14 +58,14 @@ window.addEventListener('load', function() {
             this.x = this.game.player.x;
             this.y = this.game.player.y;
 
-            this.angle += .1;
 
+            // this.angle += .1;
 
 
             const adjustCoordinates = () => {
                 if (this.game.player.frameY === 0) {
-                    this.y = this.game.player.y - 15;
-                    this.x = this.game.player.x + 10;
+                    this.y = this.game.player.y - 5;
+                    this.x = this.game.player.x;
                 } else if (this.game.player.frameY === 1) {
                     this.y = this.game.player.y - 15;
                     this.x = this.game.player.x + 10;
@@ -72,13 +74,13 @@ window.addEventListener('load', function() {
                     this.x = this.game.player.x + 10;
                 } else if (this.game.player.frameY === 3) {
                     this.y = this.game.player.y - 15;
-                    this.x = this.game.player.x - 8;
+                    this.x = this.game.player.x - 5;
                 } else null
             }
             adjustCoordinates()
             const adjustDirection = () => {
                 if (this.game.player.frameY === 0) {
-                    this.frameY = 1;
+                    this.frameY = 0;
                 } else if (this.game.player.frameY === 1) {
                     this.frameY = 1;
                 } else if (this.game.player.frameY === 2) {
@@ -88,6 +90,20 @@ window.addEventListener('load', function() {
                 } else null
             }
             adjustDirection();
+
+            const adjustAngle = () => {
+                if (this.game.player.frameY === 0) {
+                    this.angle = (Math.PI/12)
+                } else if (this.game.player.frameY === 1) {
+                    this.angle = -45*Math.PI/180;
+                } else if (this.game.player.frameY === 2) {
+                    this.angle = 11*Math.PI/12;
+                } else if (this.game.player.frameY === 3) {
+                    // this.angle = (3*Math.PI/4)
+                    this.angle = 45*Math.PI/180;
+                } else null            
+            }
+            adjustAngle();
         }
     }
 
@@ -306,6 +322,7 @@ window.addEventListener('load', function() {
         }
     }
 
+    /*
     class RamGirl {
         constructor(game, overrides={x: 0, y: 0}) {
             this.game = game;
@@ -327,7 +344,7 @@ window.addEventListener('load', function() {
             this.idlingInterval = setInterval(() => {
                this.moveLeft = !this.moveLeft; 
                this.moveRight = !this.moveRight;
-            }, 1200)
+            }, Math.ceil(Math.random(0, 1) * 800) + 300)
         }
         draw (ctx) {
             ctx.drawImage(ramGirlSprite, this.w*this.frameX, this.h*this.frameY, this.w, this.h, this.x, this.y, this.w, this.h)
@@ -391,6 +408,7 @@ window.addEventListener('load', function() {
             ramAttack()
         }
     }
+    */
 
     class Player {
         constructor(game) {
@@ -603,7 +621,10 @@ window.addEventListener('load', function() {
             this.playerKatana = new PlayerKatana(this);
             this.ramGirls = [
                 new RamGirl(this, {x: 25, y: 100}), 
-                new RamGirl(this, {x: 50, y: 50})
+                new RamGirl(this, {x: 520, y: 90}),
+                new RamGirl(this, {x: 30, y: 350}),
+                new RamGirl(this, {x: 80, y: 100}),
+                new RamGirl(this, {x: 90, y: 250})
             ];
             this.input = new InputHandler(this);
             this.keys = [];
@@ -691,8 +712,6 @@ window.addEventListener('load', function() {
     let currentTime = 0;
     let deltaTime = 0;
 
-    let gameFrame = 0;
-
     const animate = (timestamp) => {
         currentTime = timestamp;
         deltaTime = currentTime - previousTime;
@@ -700,7 +719,7 @@ window.addEventListener('load', function() {
         if (deltaTime > interval) {
 
             previousTime = currentTime - (deltaTime % interval);
-            gameFrame++;
+            incrementGameFrame();
 
             ctx.clearRect(0, 0, cnvs.width, cnvs.height);
             // ctx.drawImage(dojoSprite, 0, 0)
@@ -710,9 +729,9 @@ window.addEventListener('load', function() {
         }
 
         requestAnimationFrame(animate)
+
     }
 
     animate(0);
-
 
 })
