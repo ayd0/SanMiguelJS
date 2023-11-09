@@ -1,13 +1,10 @@
 /**@type {HTMLCanvasElement}*/
-// yo yo
 
-import { gameFrame, incrementGameFrame, getGameFrame } from "./gameFrame.js";
-
-import classUtils from "./classUtils.js";
-const hOverrides = classUtils.hOverrides;
-
-import actorClasses from "./actors.js";
-const RamGirl = actorClasses.RamGirl;
+// import { gameFrame, incrementGameFrame, getGameFrame } from "./gameFrame.js";
+// import classUtils from "./classUtils.js";
+// const hOverrides = classUtils.hOverrides;
+// import actorClasses from "./actors.js";
+// const RamGirl = actorClasses.RamGirl;
 
 const ninjaSprite = new Image()
 ninjaSprite.src = 'assets/the_ninja_x2.png'
@@ -20,6 +17,12 @@ ramGirlSprite.src = 'assets/ramGirl_x1.png'
 
 const katanaSprite = new Image()
 katanaSprite.src = 'assets/katana_x2.png'
+
+const manBirdSprite = new Image()
+manBirdSprite.src = 'assets/man-bird_x1.png'
+
+const lizardSprite = new Image()
+lizardSprite.src = 'assets/lizard_x1.png'
 
 class PlayerKatana {
     constructor(game) {
@@ -35,25 +38,32 @@ class PlayerKatana {
         this.rotationOriginY = this.y + this.h * 0.5;
         this.rotationPointRadius = 2;
         this.angle = 0;
+
+        this.wield = true;
+        this.attack = false;
+        this.slashDown = false;
+        this.slashUp = false;
+        this.slashRight = false;
+        this.slashLeft = false;
+
     }
     draw (ctx) {
         // rotation origin point
         ctx.save();
-        ctx.translate(this.x + 30, this.y + 50);
+        ctx.translate(this.x + 30, this.y + 52);
         ctx.rotate(this.angle);
-        ctx.translate(-(this.x + 32), -(this.y + 50));
+        ctx.translate(-(this.x + 32), -(this.y + 52));
         // katana
         ctx.drawImage(katanaSprite, this.w * this.frameX, this.h * this.frameY, this.w, this.h, this.x, this.y, this.w, this.h);
         ctx.restore();
     }
     update() {
 
-        this.x = this.game.player.x;
-        this.y = this.game.player.y;
-
-
-
-        // this.angle += .1;
+        const followPlayer = () => {
+            this.x = this.game.player.x;
+            this.y = this.game.player.y;
+        }
+        followPlayer();
 
         const adjustCoordinates = () => {
             if (this.game.player.frameY === 0) {
@@ -70,8 +80,9 @@ class PlayerKatana {
                 this.x = this.game.player.x - 5;
             } else null
         }
-        adjustCoordinates()
-        const adjustDirection = () => {
+        adjustCoordinates();
+
+        const adjustBladeDirection = () => {
             if (this.game.player.frameY === 0) {
                 this.frameY = 0;
             } else if (this.game.player.frameY === 1) {
@@ -82,22 +93,91 @@ class PlayerKatana {
                 this.frameY = 0;
             } else null
         }
-        adjustDirection();
+        adjustBladeDirection();
 
         const adjustAngle = () => {
-            if (this.game.player.frameY === 0) {
-                this.angle = -20*Math.PI/180;
-            } else if (this.game.player.frameY === 1) {
-                this.angle = -45*Math.PI/180;
-            } else if (this.game.player.frameY === 2) {
-                // this.angle = 11*Math.PI/12;
-                this.angle = 165*Math.PI/180
-            } else if (this.game.player.frameY === 3) {
-                // this.angle = (3*Math.PI/4)
-                this.angle = 45*Math.PI/180;
-            } else null            
+            if (!this.attack) {
+                if (this.game.player.frameY === 0) {
+                    this.angle = -20*Math.PI/180;
+                } else if (this.game.player.frameY === 1) {
+                    this.angle = -45*Math.PI/180;
+                } else if (this.game.player.frameY === 2) {
+                    this.angle = 165*Math.PI/180
+                } else if (this.game.player.frameY === 3) {
+                    this.angle = 45*Math.PI/180;
+                } else null 
+            }           
         }
         adjustAngle();
+
+        const attack = () => {
+            if (this.wield) {
+                if (this.game.keys.indexOf(' ') > -1) {
+                    this.attack = true;
+                } else this.attack = false;
+            }
+        }
+        attack();
+
+        const slashDirection = () => {
+            if (this.attack) {
+                if (this.game.player.frameY === 0) {
+                    this.slashDown = true;
+                }
+                if (this.game.player.frameY === 1) {
+                    this.slashRight = true;
+                }
+                if (this.game.player.frameY === 2) {
+                    this.slashUp = true;
+                }
+                if (this.game.player.frameY === 3) {
+                    this.slashLeft = true;
+                }
+            } else {
+                this.slashDown = false;
+                this.slashRight = false;
+                this.slashUp = false;
+                this.slashLeft = false;
+            }
+        }
+        slashDirection();
+
+        const slashDown = () => {
+            if (this.slashDown) {
+                this.angle =(-(20*Math.PI/180)) + (180*Math.PI/180);
+            }
+        }
+        slashDown();
+
+        const slashUp = () => {
+            if (this.slashUp) {
+                this.angle = (165*Math.PI/180) + (180*Math.PI/180)
+            }
+        }
+        slashUp();
+
+        const slashRight = () => {
+            if (this.slashRight) {
+                if (this.angle < (-45*Math.PI/180) + (180*Math.PI/180)) {
+                this.angle += .2;
+                // console.log(this.angle)
+                }
+
+            }
+        }
+        slashRight();
+
+        const slashLeft = () => {
+            if (this.slashLeft) {
+                if (this.angle > -2.3) {
+                this.angle -= .2;
+                // console.log(this.angle)
+                }
+
+            }
+        }
+        slashLeft();
+
     }
 }
 
@@ -317,7 +397,6 @@ class InputHandler {
     }
 }
 
-/*
 class RamGirl {
     constructor(game) {
         this.game = game;
@@ -404,7 +483,7 @@ class RamGirl {
 
     }
 }
-*/
+
 
 class Player {
     constructor(game) {
@@ -563,9 +642,12 @@ class Player {
         const playerWalk = () => {
             if (this.walk) {
                 if (gameFrame % 10 === 0) {
-                    if(this.frameX < 4) {
-                        this.frameX ++;} 
-                    else {this.frameX = 1}
+                    if (this.frameX < 4) {
+                        this.frameX ++;
+                    } 
+                    else {
+                        this.frameX = 1
+                    }
                 }
             }
             if (!this.walk) {
@@ -619,14 +701,12 @@ class Game {
         this.ramGirl = new RamGirl(this);
         this.input = new InputHandler(this);
         this.keys = [];
-
         this.mouse = {
             x: 0,
             y: 0,
             xOff: 0,
             yOff: 0
         }
-        
         window.addEventListener('mousemove', (e) => {
             this.mouse.x = e.offsetX;
             this.mouse.y = e.offsetY;
@@ -635,12 +715,10 @@ class Game {
         //     this.mouse.x = e.offsetX - this.mouse.xOff;
         //     this.mouse.y = e.offsetY - this.mouse.yOff;
         // })
-
         this.mouseCoordinates = {
             x: 0,
             y: 0
         }
-
     }
     update() {
         this.dojoLevel.update()
@@ -649,21 +727,23 @@ class Game {
         this.playerKatana.update()
         this.player.update()
 
-        if (this.dojoLevel.moveLeft)  this.mouse.xOff -= this.player.speed;
-        else if (this.dojoLevel.moveRight) this.mouse.xOff += this.player.speed;
-        else this.mouse.xOff = this.mouse.xOff;
-
-        if (this.dojoLevel.moveUp) this.mouse.yOff -= this.player.speed;
-        else if (this.dojoLevel.moveDown) this.mouse.yOff += this.player.speed;
-        else this.mouse.yOff = this.mouse.yOff;
-
-        // console.log(this.mouse.xOff, this.mouse.yOff)
+        const dojoMovement = () => {
+            if (this.dojoLevel.moveLeft)  this.mouse.xOff -= this.player.speed;
+            else if (this.dojoLevel.moveRight) this.mouse.xOff += this.player.speed;
+            else this.mouse.xOff = this.mouse.xOff;
+            if (this.dojoLevel.moveUp) this.mouse.yOff -= this.player.speed;
+            else if (this.dojoLevel.moveDown) this.mouse.yOff += this.player.speed;
+            else this.mouse.yOff = this.mouse.yOff;
+        }
+        dojoMovement();
 
         const trackMouse = () => {
             this.mouseCoordinates.x = this.mouse.x - this.mouse.xOff;
             this.mouseCoordinates.y = this.mouse.y - this.mouse.yOff;
         }
         trackMouse()
+
+
 
 
     }
@@ -695,6 +775,8 @@ class Game {
     }
 }
 
+let gameFrame = 0;
+
 window.addEventListener('load', function() {
 
     const cnvs = document.getElementById('canvas');
@@ -716,11 +798,11 @@ window.addEventListener('load', function() {
         deltaTime = currentTime - previousTime;
 
         if (deltaTime > interval) {
-
             previousTime = currentTime - (deltaTime % interval);
-            incrementGameFrame()
+            gameFrame++;
+
             ctx.clearRect(0, 0, cnvs.width, cnvs.height);
-            // ctx.drawImage(dojoSprite, 0, 0)
+            
             game.update()
             game.draw(ctx)
 
