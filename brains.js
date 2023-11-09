@@ -24,6 +24,8 @@ manBirdSprite.src = 'assets/man-bird_x1.png'
 const lizardSprite = new Image()
 lizardSprite.src = 'assets/lizard_x1.png'
 
+//tasks
+// add coordinate (x, y) movement to enhance slashing
 class PlayerKatana {
     constructor(game) {
         this.game = game;
@@ -41,10 +43,18 @@ class PlayerKatana {
 
         this.wield = true;
         this.attack = false;
+        this.slashSpeed = .5;
+
         this.slashDown = false;
         this.slashUp = false;
         this.slashRight = false;
         this.slashLeft = false;
+
+        this.slashDown_EndAngle = -3.549;
+        this.slashUp_EndAngle = -0.52;
+        this.slashRight_EndAngle = 2.356;
+        this.slashLeft_EndAngle = -2.3;
+
 
     }
     draw (ctx) {
@@ -144,23 +154,27 @@ class PlayerKatana {
 
         const slashDown = () => {
             if (this.slashDown) {
-                this.angle =(-(20*Math.PI/180)) + (180*Math.PI/180);
+                if (this.angle > this.slashDown_EndAngle) {
+                    this.angle -= this.slashSpeed;
+                }
             }
         }
         slashDown();
 
         const slashUp = () => {
             if (this.slashUp) {
-                this.angle = (165*Math.PI/180) + (180*Math.PI/180)
+                if (this.angle > this.slashUp_EndAngle) {
+                    this.angle -= this.slashSpeed;
+                }
+
             }
         }
         slashUp();
 
         const slashRight = () => {
             if (this.slashRight) {
-                if (this.angle < (-45*Math.PI/180) + (180*Math.PI/180)) {
-                this.angle += .2;
-                // console.log(this.angle)
+                if (this.angle < this.slashRight_EndAngle) {
+                    this.angle += this.slashSpeed;
                 }
 
             }
@@ -169,8 +183,8 @@ class PlayerKatana {
 
         const slashLeft = () => {
             if (this.slashLeft) {
-                if (this.angle > -2.3) {
-                this.angle -= .2;
+                if (this.angle > this.slashLeft_EndAngle) {
+                this.angle -= this.slashSpeed;
                 // console.log(this.angle)
                 }
 
@@ -802,7 +816,7 @@ window.addEventListener('load', function() {
             gameFrame++;
 
             ctx.clearRect(0, 0, cnvs.width, cnvs.height);
-            
+
             game.update()
             game.draw(ctx)
 
