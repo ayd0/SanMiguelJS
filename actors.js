@@ -11,6 +11,7 @@ ninjaSprite.src = 'assets/the_ninja_x2.png'
 
 class Actor {
     constructor(game) {
+        console.log(game.hardBoundaries);
         this.game = game;
         this.w = 64;
         this.h = 64;
@@ -24,7 +25,7 @@ class Actor {
         this.moveDown = false;
         this.speed = 1;
 
-        this.boundaryBox = true;
+        this.boundaryBox = false;
         this.boundaryBoxW = 20;
         this.boundaryBoxH = 46;
         this.boundaryBoxX = this.x + this.w * 0.5 - this.boundaryBoxW * 0.5;
@@ -34,8 +35,8 @@ class Actor {
     }}
 
 class RamGirl extends Actor {
-    constructor(overrides = { x: 0, y: 0 }) {
-        super();
+    constructor(game, overrides = { x: 0, y: 0 }) {
+        super(game);
         // pos
         this.x = hOverrides(300, overrides.x);
         this.y = hOverrides(300, overrides.y);
@@ -47,12 +48,14 @@ class RamGirl extends Actor {
 
         // boundaries
         this.boundaryBoxW = 40;
+        this.boundaryBoxH = 90;
 
         // future state for idling movement, will update for random chance
         this.idling = false;
         this.idlingInterval = setInterval(() => {
             this.moveLeft = !this.moveLeft;
             this.moveRight = !this.moveRight;
+            this.walk = true;
         }, Math.ceil(Math.random(0, 1) * 800) + 500);
     }
     draw(ctx) {
@@ -153,6 +156,18 @@ class RamGirl extends Actor {
             this.boundaryBoxBottomEdge = this.boundaryBoxY + this.boundaryBoxH;
         };
         updateBoundaryBox();
+
+        // movement boundary testing
+        if (this.boundaryBoxY > this.game.hardBoundaries.row1H) {
+            this.moveUp = true;
+        } else {
+            this.moveUp = false;
+            clearInterval(this.idlingInterval);
+            this.moveLeft = false;
+            this.moveRight = false;
+            this.walk = false;
+            this.frameX = 1;
+        }
     }
 }
 class Player extends Actor {
@@ -178,7 +193,6 @@ class Player extends Actor {
             this.cameraBoxRightEdge = this.cameraBoxX + this.cameraBoxW;
             this.cameraBoxBottomEdge = this.cameraBoxY + this.cameraBoxH;
 
-            this.boundaryBox = true;
             this.boundaryBoxW = 20;
             this.boundaryBoxH = 46;
             this.boundaryBoxX = this.x + this.w * 0.5 - this.boundaryBoxW * 0.5;
